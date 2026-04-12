@@ -10,19 +10,16 @@ st.set_page_config(page_title="METU-IE Summer Practice Bot", page_icon="🔴", l
 
 st.markdown("""
     <style>
-    /* Expand the main container so the header reaches the sides */
     .block-container { 
         padding-top: 2rem; 
         max-width: 95% !important; 
     }
     
-    /* Make the sidebar slightly wider to enlarge the logo */
     [data-testid="stSidebar"] {
         min-width: 330px !important;
         max-width: 330px !important;
     }
     
-    /* Reduce padding around the logo and language toggle */
     [data-testid="stSidebar"] .stImage {
         margin-top: -5px;
         margin-bottom: -5px;
@@ -32,7 +29,6 @@ st.markdown("""
         margin-bottom: -10px;
     }
     
-    /* Make the language toggle more narrow/compact */
     div[role="radiogroup"] {
         gap: 10px !important;
     }
@@ -105,9 +101,12 @@ st.markdown("""
     .starter-btn>button {
         background-color: #f8f9fa;
         text-align: center;
-        border-radius: 20px;
+        border-radius: 8px;
         color: #cb2c30;
         border: 1px solid #cb2c30;
+        margin-bottom: 5px;
+        font-size: 14px;
+        padding: 8px;
     }
     .starter-btn>button:hover {
         background-color: #cb2c30;
@@ -149,10 +148,18 @@ lang_dict = {
         "placeholder": "E.g., What are the requirements for IE 300?",
         "thinking": "Consulting official guidelines...",
         "welcome_msg": "👋 Welcome! I am ready to help. Try asking one of these:",
-        "rec_1": "IE 300 Prerequisites?",
+        "rec_1": "IE 300 Prerequisites",
         "rec_1_prmpt": "What are the exact prerequisites for IE 300?",
-        "rec_2": "Suitable companies for IE 400?",
-        "rec_2_prmpt": "Are there any company constraints for IE 400?"
+        "rec_2": "IE 400 Company Types",
+        "rec_2_prmpt": "What types of companies are accepted for IE 400?",
+        "rec_3": "Required Paperwork",
+        "rec_3_prmpt": "What is the paperwork needed to officially register?",
+        "rec_4": "Report Deadlines",
+        "rec_4_prmpt": "When is the deadline to submit the summer practice report?",
+        "rec_5": "Finding a Company",
+        "rec_5_prmpt": "How can I arrange a summer practice organization?",
+        "rec_6": "Full-time Project",
+        "rec_6_prmpt": "Can I do a full-time project instead of a regular practice?"
     },
     "TR": {
         "topbar": "EM | ODTÜ",
@@ -185,10 +192,18 @@ lang_dict = {
         "placeholder": "Örn., IE 300 için gereksinimler nelerdir?",
         "thinking": "Resmi yönergeler inceleniyor...",
         "welcome_msg": "👋 Hoş geldiniz! Yardım etmeye hazırım. Şunları sorabilirsiniz:",
-        "rec_1": "IE 300 Ön Koşulları?",
+        "rec_1": "IE 300 Ön Koşulları",
         "rec_1_prmpt": "IE 300 stajı için ön koşullar nelerdir?",
-        "rec_2": "IE 400 için uygun şirketler?",
-        "rec_2_prmpt": "IE 400 için şirket veya sektör kısıtlaması var mı?"
+        "rec_2": "IE 400 Şirket Türleri",
+        "rec_2_prmpt": "IE 400 stajı için hangi tür şirketler kabul ediliyor?",
+        "rec_3": "Gerekli Evraklar",
+        "rec_3_prmpt": "Resmi kayıt için gerekli evraklar nelerdir?",
+        "rec_4": "Teslim Tarihleri",
+        "rec_4_prmpt": "Yaz stajı raporunu teslim etmek için son tarih nedir?",
+        "rec_5": "Şirket Bulma",
+        "rec_5_prmpt": "Yaz stajı organizasyonunu nasıl ayarlayabilirim?",
+        "rec_6": "Tam Zamanlı Proje",
+        "rec_6_prmpt": "Normal staj yerine tam zamanlı bir proje yapabilir miyim?"
     }
 }
 
@@ -276,9 +291,14 @@ Below is the official documentation. You MUST use ONLY this information to answe
 DO NOT use outside knowledge. DO NOT invent constraints, deadlines, or rules that are not explicitly written below.
 
 CRITICAL GUARDRAILS:
-1. IE 400 CAN absolutely be conducted in service industries (e.g., banks, hospitals, hotels, research organizations). Do not tell students that service industries are banned. 
-2. When asked about company constraints or suitability for IE 400, explain that the organization must have a "purposeful system" with integrated operations of people, financial resources, processes, and information, along with decision-making capabilities.
-3. ALWAYS respond in the SAME LANGUAGE as the user's prompt (e.g., reply in Turkish if the prompt is in Turkish, reply in English if the prompt is in English).
+1. IE 400 COMPANY TYPES: According to the official presentation slides, students can search for alternative companies for IE 400 in ALL of the following sectors:
+   - Manufacturing firms (Automotive, Machine parts, Electronics, etc.)
+   - Batch process industries (Steel, Paper mills, Pharmaceutical, etc.)
+   - Continuous process industries (Cement, concrete, Sugar, Flour mill, etc.)
+   - Service industries (Hospitals, Hotels, Banking, Research organizations, Transportation, Public institutions, NGOs, etc.)
+   NEVER state that continuous process or service industries are banned for IE 400. They are explicitly accepted.
+2. For IE 400 related questions generally use IE400_introduction_2025.pptx and for IE 300 related questions generally use IE300_introduction_2025.pptx.
+2. ALWAYS respond in the SAME LANGUAGE as the user's prompt (e.g., reply in Turkish if the prompt is in Turkish).
 
 <official_documentation>
 {kb_text}
@@ -306,24 +326,16 @@ with st.sidebar:
     st.header(t["faq_header"])
     
     st.subheader(t["cat1"])
-    if st.button(t["q1_lbl"]):
-        st.session_state.quick_prompt = t["q1_prmpt"]
-    if st.button(t["q2_lbl"]):
-        st.session_state.quick_prompt = t["q2_prmpt"]
-    if st.button(t["q3_lbl"]):
-        st.session_state.quick_prompt = t["q3_prmpt"]
+    if st.button(t["q1_lbl"]): st.session_state.quick_prompt = t["q1_prmpt"]
+    if st.button(t["q2_lbl"]): st.session_state.quick_prompt = t["q2_prmpt"]
+    if st.button(t["q3_lbl"]): st.session_state.quick_prompt = t["q3_prmpt"]
         
     st.subheader(t["cat2"])
-    if st.button(t["q4_lbl"]):
-        st.session_state.quick_prompt = t["q4_prmpt"]
-    if st.button(t["q5_lbl"]):
-        st.session_state.quick_prompt = t["q5_prmpt"]
-    if st.button(t["q6_lbl"]):
-        st.session_state.quick_prompt = t["q6_prmpt"]
-    if st.button(t["q7_lbl"]):
-        st.session_state.quick_prompt = t["q7_prmpt"]
-    if st.button(t["q8_lbl"]):
-        st.session_state.quick_prompt = t["q8_prmpt"]
+    if st.button(t["q4_lbl"]): st.session_state.quick_prompt = t["q4_prmpt"]
+    if st.button(t["q5_lbl"]): st.session_state.quick_prompt = t["q5_prmpt"]
+    if st.button(t["q6_lbl"]): st.session_state.quick_prompt = t["q6_prmpt"]
+    if st.button(t["q7_lbl"]): st.session_state.quick_prompt = t["q7_prmpt"]
+    if st.button(t["q8_lbl"]): st.session_state.quick_prompt = t["q8_prmpt"]
 
     st.markdown("---")
     
@@ -345,16 +357,26 @@ for msg in st.session_state.messages:
 # 2. Render welcome recommendations ONLY if chat is empty
 if len(st.session_state.messages) == 0:
     st.info(t["welcome_msg"])
-    col1, col2 = st.columns(2)
+    
+    # Create a clean 3-column grid for the 6 starter questions
+    col1, col2, col3 = st.columns(3)
+    
     with col1:
         st.markdown('<div class="starter-btn">', unsafe_allow_html=True)
-        if st.button(t["rec_1"], use_container_width=True):
-            st.session_state.quick_prompt = t["rec_1_prmpt"]
+        if st.button(t["rec_1"], use_container_width=True): st.session_state.quick_prompt = t["rec_1_prmpt"]
+        if st.button(t["rec_4"], use_container_width=True): st.session_state.quick_prompt = t["rec_4_prmpt"]
         st.markdown('</div>', unsafe_allow_html=True)
+        
     with col2:
         st.markdown('<div class="starter-btn">', unsafe_allow_html=True)
-        if st.button(t["rec_2"], use_container_width=True):
-            st.session_state.quick_prompt = t["rec_2_prmpt"]
+        if st.button(t["rec_2"], use_container_width=True): st.session_state.quick_prompt = t["rec_2_prmpt"]
+        if st.button(t["rec_5"], use_container_width=True): st.session_state.quick_prompt = t["rec_5_prmpt"]
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with col3:
+        st.markdown('<div class="starter-btn">', unsafe_allow_html=True)
+        if st.button(t["rec_3"], use_container_width=True): st.session_state.quick_prompt = t["rec_3_prmpt"]
+        if st.button(t["rec_6"], use_container_width=True): st.session_state.quick_prompt = t["rec_6_prmpt"]
         st.markdown('</div>', unsafe_allow_html=True)
 
 # 3. Handle input
